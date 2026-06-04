@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NetTrek</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="start-screen" class="screen">
+  <div class="title-box wide">
+    <h1>NETTREK</h1>
+    <p class="subtitle">Survive the galaxy. Capture planets. Get stronger.</p>
+
+    <div class="how-to">
+      <div class="col">
+        <h3>The mission</h3>
+        <p>You command one ship in hostile space. Three rival fleets are out to destroy you — and each other. Stay alive as long as you can.</p>
+        <p><b>Capture planets</b> to grow stronger. Each planet you take adds to your maximum hull, shields, and fuel — and friendly planets repair and refuel you when you orbit them. The AI does the same, so move fast.</p>
+        <p>You have <b>3 lives</b>. Final score = kills + captures + seconds survived.</p>
+      </div>
+      <div class="col">
+        <h3>Controls</h3>
+        <div class="ctrl-grid">
+          <kbd>Right-click</kbd><span>set course (breaks target lock)</span>
+          <kbd>Left-click ship</kbd><span>lock target if close, else fire phasers</span>
+          <kbd>F</kbd><span>lock / unlock nearest enemy</span>
+          <kbd>T</kbd><span>fire torpedo (limited magazine, reloads slowly)</span>
+          <kbd>D</kbd><span>deploy flare — 50% chance to divert an incoming torp</span>
+          <kbd>0–9</kbd><span>set warp speed</span>
+          <kbd>S</kbd><span>shields up / down</span>
+          <kbd>O</kbd><span>orbit nearest planet (need low speed)</span>
+          <kbd>C</kbd><span>begin capture sequence</span>
+          <kbd>R</kbd><span>toggle radar range (short / long)</span>
+          <kbd>Esc</kbd><span>pause</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-to" style="margin-top:0">
+      <div class="col">
+        <h3>Energy &amp; combat</h3>
+        <p>One <b>Energy</b> pool powers everything — warp drive, shields, phasers, and torpedoes. Shields up drains energy steadily and absorbs incoming fire (no hull damage); shields down lets you save energy and recharge faster, but a single torpedo will hurt. If shield HP hits zero, shields collapse and can't be raised for a couple seconds.</p>
+        <p>Torpedoes are limited (your magazine size depends on ship class) and reload one at a time over a few seconds — faster while orbiting a friendly repair planet. Torps gently home onto a locked target out to <b>5 screens</b>, but accuracy drops with distance: <b>100% at 1 screen, 20% at 5 screens</b>.</p>
+        <p>Enemy torps lock onto you the same way. Your radar will blink red and the HUD will show the torpedo's distance closing. You have <b>3 flares</b> per life — press <kbd>D</kbd> to deploy one. Each flare has a <b>50% chance</b> to divert the nearest incoming torpedo.</p>
+      </div>
+      <div class="col">
+        <h3>Targeting &amp; firing</h3>
+        <p><b>Left-click an enemy ship</b> (within ~3000u) or press <kbd>F</kbd> to lock the nearest one. While locked, your ship auto-pivots toward the target and your speed is capped at combat speed (warp 4) so you can come around. If you're moving too fast you'll fly past — slow down to engage.</p>
+        <p>Your <b>firing cone</b> is roughly ±20° dead ahead. Phasers and torpedoes auto-fire when the target is inside the cone and in range. Watch for the green <b>FIRE READY</b> reticle.</p>
+        <h3 style="margin-top:14px">Radar &amp; scanners</h3>
+        <p>The universe is huge — <b>100 screens square</b>. Your radar shows the area centered on you in two ranges, toggle with <kbd>R</kbd>: <b>SHORT</b> (5 screens) shows ship class markers; <b>LONG</b> (20 screens) shows only contact dots. Click any ship on the radar to lock it and head toward it. Detail revealed depends on distance: in the same screen → full stats; short range → class &amp; rough hull; long range → just "contact".</p>
+        <h3 style="margin-top:14px">Capturing a planet</h3>
+        <p>Orbit an enemy planet, press <kbd>C</kbd>, hold for <b>5 seconds</b> with <b>no enemy within range</b>.</p>
+      </div>
+    </div>
+
+    <div class="config">
+      <label>Team color
+        <select id="team-select">
+          <option value="FED" selected>Federation (blue)</option>
+          <option value="ROM">Romulans (green)</option>
+          <option value="KLI">Klingons (red)</option>
+          <option value="ORI">Orions (yellow)</option>
+        </select>
+      </label>
+      <label>Ship class
+        <select id="ship-select">
+          <option value="SC">Scout — fast, fragile</option>
+          <option value="DD">Destroyer — balanced</option>
+          <option value="CA" selected>Cruiser — solid all-rounder</option>
+          <option value="BB">Battleship — slow tank</option>
+        </select>
+      </label>
+      <label>Difficulty
+        <select id="diff-select">
+          <option value="0.6">Cadet</option>
+          <option value="1.0" selected>Lieutenant</option>
+          <option value="1.4">Captain</option>
+          <option value="1.8">Admiral</option>
+        </select>
+      </label>
+    </div>
+
+    <button id="start-btn">Engage</button>
+  </div>
+</div>
+
+<div id="game-screen" class="screen hidden">
+  <div class="game-wrap">
+    <div class="left-col">
+      <canvas id="tactical" width="700" height="700"></canvas>
+      <div id="message-log"></div>
+    </div>
+    <div class="right-col">
+      <div id="radar-header">
+        <span class="radar-title">RADAR</span>
+        <button id="radar-toggle" title="Toggle radar range (R)">SHORT</button>
+      </div>
+      <canvas id="galactic" width="320" height="320"></canvas>
+      <div id="target-info" class="hidden"></div>
+      <div id="hud">
+        <div class="hud-row"><span class="lbl">Ship</span><span id="hud-ship">Cruiser</span></div>
+        <div class="hud-row"><span class="lbl">Lives</span><span id="hud-lives">3</span></div>
+        <div class="hud-row"><span class="lbl">Hull</span><div class="bar"><div id="bar-hull" class="bar-fill green"></div></div></div>
+        <div class="hud-row"><span class="lbl">Shield</span><div class="bar"><div id="bar-shield" class="bar-fill blue"></div></div></div>
+        <div class="hud-row"><span class="lbl">Energy</span><div class="bar"><div id="bar-energy" class="bar-fill yellow"></div></div></div>
+        <div class="hud-row"><span class="lbl">Torps</span><div class="bar"><div id="bar-torps" class="bar-fill green"></div></div></div>
+        <div class="hud-row"><span class="lbl">&nbsp;</span><span id="hud-torps">8 / 8</span></div>
+        <div class="hud-row"><span class="lbl">Flares</span><span id="hud-flares">3 / 3</span></div>
+        <div class="hud-row hidden" id="hud-incoming-row"><span class="lbl alert-lbl">!</span><span id="hud-incoming" class="alert-text">INCOMING</span></div>
+        <div class="hud-row"><span class="lbl">Speed</span><span id="hud-speed">0 / 9</span></div>
+        <div class="hud-row"><span class="lbl">Shields</span><span id="hud-shields">UP</span></div>
+        <div class="hud-row"><span class="lbl">Lock</span><span id="hud-lock">—</span></div>
+        <div class="hud-row"><span class="lbl">Capturing</span><div class="bar"><div id="bar-cap" class="bar-fill orange"></div></div></div>
+        <div class="hud-row"><span class="lbl">Kills</span><span id="hud-kills">0</span></div>
+        <div class="hud-row"><span class="lbl">Planets</span><span id="hud-planets">0</span></div>
+        <div class="hud-row"><span class="lbl">Time</span><span id="hud-time">0s</span></div>
+        <div class="hud-row big"><span class="lbl">Score</span><span id="hud-score">0</span></div>
+      </div>
+      <div id="scoreboard">
+        <h3>Planets held</h3>
+        <div id="team-bars"></div>
+      </div>
+      <div id="key-ref">
+        <h3>Keys</h3>
+        <div class="keys">
+          <span><kbd>RMB</kbd> course</span>
+          <span><kbd>LMB</kbd> lock / fire</span>
+          <span><kbd>F</kbd> lock nearest</span>
+          <span><kbd>T</kbd> torp</span>
+          <span><kbd>D</kbd> deploy flare</span>
+          <span><kbd>0-9</kbd> warp</span>
+          <span><kbd>S</kbd> shields</span>
+          <span><kbd>O</kbd> orbit</span>
+          <span><kbd>C</kbd> capture</span>
+          <span><kbd>R</kbd> radar mode</span>
+          <span><kbd>Esc</kbd> pause</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="end-screen" class="screen hidden">
+  <div class="title-box">
+    <h1 id="end-title">Game Over</h1>
+    <p id="end-stats"></p>
+    <button id="end-btn">Play again</button>
+  </div>
+</div>
+
+<script src="constants.js"></script>
+<script src="galaxy.js"></script>
+<script src="ship.js"></script>
+<script src="weapons.js"></script>
+<script src="ai.js"></script>
+<script src="input.js"></script>
+<script src="render.js"></script>
+<script src="ui.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

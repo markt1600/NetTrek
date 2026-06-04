@@ -1,6 +1,6 @@
 # NetTrek
 
-A browser-based, single-player tribute to **Netrek** (1988) and **NetTrek** (1985) — a top-down team-vs-team space combat / strategy game in which you and AI teammates try to capture every enemy planet.
+A browser-based, single-player survival game inspired by **Netrek** (1988) and **NetTrek** (1985). You command one ship against three rival AI fleets — stay alive, capture planets to grow stronger.
 
 No build step. Pure HTML + JS + CSS, ready to deploy to Vercel as a static site.
 
@@ -30,23 +30,20 @@ Vercel auto-detects this as a static site (the included `vercel.json` only sets 
 
 ## How to play
 
-Pick a team, difficulty, and game length on the start screen. The goal is to capture every enemy planet for your team. You command one ship and 3 AI teammates; each enemy team has 4 AI bots.
+Pick a team color, ship class, and difficulty on the start screen. Survive as long as possible; game ends when your 3 lives are gone. Score = kills + captures + seconds survived.
 
-Quick controls (full reference is on the **Instructions** screen):
+Controls:
 
-- **Right-click** the tactical map (left) or galactic map (right) — set course toward that point
-- **Left-click** an enemy ship — fire phasers (instant beam, costs fuel)
+- **Right-click** the tactical or galactic map — set course
+- **Left-click** an enemy ship — fire phasers
 - **0–9** — set warp speed
-- **T** — fire torpedo toward your last clicked point / current heading
-- **S** — toggle shields. Shields must be DOWN to beam armies up or to refit.
+- **T** — fire torpedo
+- **S** — toggle shields
 - **O** — orbit nearest planet (must be slow & close)
-- **B** — bomb enemy planet you're orbiting (kills armies)
-- **X / Z** — beam armies up / down
-- **R** — cycle to next ship class while orbiting a friendly planet, shields down
-- **Y / U / I** — tractor / pressor beam on the ship you're hovering / release
+- **C** — begin capture (orbit + hold for 5 seconds, no enemy within range)
 - **Esc** — pause
 
-You need **kills** before you can carry armies (max armies you can carry = `kills × 2`, up to your ship's capacity). Drop armies onto an enemy planet with 0 armies to capture it.
+Each planet you capture gives your team permanent bonuses to maximum hull, shield, fuel, and repair rate. Repair / fuel / agri planets give larger bonuses. The AI fleets capture too — get there first.
 
 ## Architecture
 
