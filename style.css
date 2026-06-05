@@ -489,6 +489,56 @@ kbd {
   30%       { border-color: var(--line); box-shadow: 0 0 0 rgba(0,0,0,0); }
 }
 
+/* ---- Help overlay ---- */
+#help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: auto;
+}
+#help-overlay.hidden { display: none; }
+.help-modal {
+  background: var(--panel);
+  border: 2px solid var(--blue);
+  box-shadow: 0 0 30px rgba(100, 181, 246, 0.5);
+  padding: 24px 32px;
+  max-width: 1000px;
+  width: 100%;
+  max-height: 92vh;
+  overflow: auto;
+}
+.help-modal h2 {
+  margin: 0 0 16px;
+  text-align: center;
+  letter-spacing: 0.3em;
+  color: #fff;
+}
+.help-modal h3 {
+  color: var(--blue);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 14px 0 6px;
+}
+.help-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.help-grid ul { margin: 4px 0 10px 18px; padding: 0; }
+.help-grid p { margin: 0 0 10px; }
+.help-keys { width: 100%; border-collapse: collapse; }
+.help-keys td { padding: 3px 6px; font-size: 12px; vertical-align: top; }
+.help-keys td:first-child { white-space: nowrap; color: var(--blue); }
+.help-keys tr:nth-child(odd) { background: rgba(255,255,255,0.02); }
+
 .alert-lbl, .alert-text {
   color: var(--red) !important;
   font-weight: bold;
